@@ -1,10 +1,9 @@
 (() => {
 'use strict';
 
-// 管理者の認証情報（変更する場合はClaudeに依頼してください）
-const ADMIN_EMAIL = 'fujimoto.atu@gmail.com';
-// パスワード「pog2026」のSHA-256ハッシュ
-const ADMIN_PASSWORD_HASH = '6785b9af39a445f00f7d005bb0221e7d17f7ab59be5d31edd26a65b24d910dba';
+// 管理者パスワードのSHA-256ハッシュ（変更する場合はClaudeに依頼してください）
+// パスワード「dahama」
+const ADMIN_PASSWORD_HASH = '6ac37f0d3be79cc3d0133033a5c7d3ff360c6c471939cd155817a7f782a4d0d3';
 
 async function sha256(message) {
   const msgBuffer = new TextEncoder().encode(message);
@@ -57,16 +56,6 @@ function setupLoginForm() {
   form.id = 'admin-login-form';
   form.style.cssText = 'margin:1em 0; max-width:320px;';
 
-  const emailLabel = document.createElement('label');
-  emailLabel.style.cssText = 'display:block; margin-bottom:0.75em;';
-  emailLabel.innerHTML = 'メールアドレス';
-  const emailInput = document.createElement('input');
-  emailInput.type = 'email';
-  emailInput.id = 'admin-email';
-  emailInput.style.cssText = 'display:block; width:100%; padding:0.5em; margin-top:0.25em; box-sizing:border-box; border:1px solid #ccc; border-radius:4px;';
-  emailInput.required = true;
-  emailLabel.appendChild(emailInput);
-
   const passLabel = document.createElement('label');
   passLabel.style.cssText = 'display:block; margin-bottom:0.75em;';
   passLabel.innerHTML = 'パスワード';
@@ -88,7 +77,6 @@ function setupLoginForm() {
   errorMsg.textContent = 'メールアドレスまたはパスワードが違います';
   errorMsg.style.cssText = 'color:red; display:none; margin-top:0.5em;';
 
-  form.appendChild(emailLabel);
   form.appendChild(passLabel);
   form.appendChild(submitBtn);
   form.appendChild(errorMsg);
@@ -96,11 +84,10 @@ function setupLoginForm() {
 
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
-    const email = emailInput.value.trim();
     const password = passInput.value;
     const hash = await sha256(password);
 
-    if (email === ADMIN_EMAIL && hash === ADMIN_PASSWORD_HASH) {
+    if (hash === ADMIN_PASSWORD_HASH) {
       sessionStorage.setItem('pog-admin-auth', 'true');
       window.location.reload();
     } else {
