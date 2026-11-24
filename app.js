@@ -361,7 +361,7 @@ async function loadSharedResults(){
  const revision=++sharedFetchRevision;
  try{
   if(isArchive()&&!archiveSeasonId(requestedSeason))throw Error('invalid requested season');
-  const r=await fetch('/api/pog/data'+(isArchive()?'?season='+encodeURIComponent(requestedSeason):''),{cache:'no-store',credentials:'same-origin'});
+  const r=await fetch('./pog-data.json',{cache:'no-store'});
   if(!r.ok)throw Error('shared data unavailable');
   const body=await r.json();
   if(revision!==sharedFetchRevision)return;
