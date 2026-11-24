@@ -1,0 +1,42 @@
+name: POG結果自動更新
+
+on:
+  schedule:
+    - cron: '0 23 * * 0,1'
+  workflow_dispatch:
+
+jobs:
+  update-results:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Python をセットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: POG結果を更新
+        run: python scripts/update_results.py
+
+      - name: 変更確認
+        id: changes
+        run: |
+          if git diff --quiet pog-data.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 変更をコミット・プッシュ
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Actions"
+          git add pog-data.json
+          git commit -m "🏇 POG結果を自動更新 ($(TZ='Asia/Tokyo' date +'%Y-%m-%d'))"
+          git push
